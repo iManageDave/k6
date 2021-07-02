@@ -182,6 +182,12 @@ func (r *Runner) newVU(idLocal, idGlobal uint64, samplesOut chan<- stats.SampleC
 	}
 
 	tlsConfig := &tls.Config{
+		GetClientCertificate: func(info *tls.CertificateRequestInfo) (*tls.Certificate, error) {
+			if len(certs) == 1 {
+				return &certs[0], nil
+			}
+			return nil, nil
+		},
 		InsecureSkipVerify: r.Bundle.Options.InsecureSkipTLSVerify.Bool, //nolint:gosec
 		CipherSuites:       cipherSuites,
 		MinVersion:         uint16(tlsVersions.Min),
